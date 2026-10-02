@@ -39,8 +39,6 @@ Para configurar o ambiente de desenvolvimento local, certifique-se de ter o Node
 
 1. Clone o repositório:
    `git clone https://github.com/HugoVercoza/nassauTickets.git`
-2. Configure o banco de dados:
-   [Explique brevemente se há algum script SQL para rodar ou variáveis de ambiente .env para configurar]
 
 ## Instruções de Execução
 
