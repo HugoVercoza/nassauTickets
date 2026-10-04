@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # nassauTickets
 
 ## Descrição
@@ -59,6 +58,3 @@ O projeto utiliza um fluxo de versionamento baseado em duas branches principais:
 * **`dev`:** Branch principal de desenvolvimento, onde as novas funcionalidades e correções são integradas antes de irem para a `main`.
 
 Todo o desenvolvimento é realizado na branch `dev` (ou em branches auxiliares que fazem merge para a `dev`) e, posteriormente, integrado à `main` através de Pull Requests / Merge.
-=======
-# nassauTickets
->>>>>>> origin/dev
