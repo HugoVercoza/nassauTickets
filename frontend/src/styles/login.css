@@ -1,0 +1,127 @@
+
+.formulario1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    width: 340px;
+    min-height: 380px;
+    padding: 30px 20px;
+    margin: 40px auto;
+
+    background-color: rgb(228, 245, 239);
+    border: 1px solid #f5efef;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.formulario1 h1 {
+    color: #263d35;
+    margin-bottom: 10px;
+}
+
+.formulario1 form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.label {
+    width: 85%;
+    text-align: left;
+    font-weight: 600;
+    color: #344b42;
+}
+
+/* Campos de email e senha */
+
+.email,
+.senha {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 14px;
+}
+
+.email {
+    width: 85%;
+}
+
+.email:focus,
+.senha:focus {
+    border-color: #6c9b86;
+    box-shadow: 0 0 0 2px rgba(108, 155, 134, 0.15);
+}
+
+/* Campo de senha e botão do olho */
+
+.campo-senha {
+    position: relative;
+    width: 85%;
+    display: flex;
+    align-items: center;
+}
+
+.campo-senha .senha {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.btnsenha {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+    padding: 5px;
+    color: #718078;
+    cursor: pointer;
+}
+
+.btnsenha:hover {
+    color: #263d35;
+}
+
+/* Botão entrar */
+
+.botao {
+    width: 85%;
+    padding: 11px;
+    margin-top: 10px;
+
+    background-color: #527d69;
+    color: white;
+    border: none;
+    border-radius: 7px;
+
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.botao:hover {
+    background-color: #3d6552;
+}
+.login{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}

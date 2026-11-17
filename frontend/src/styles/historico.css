@@ -1,0 +1,131 @@
+.historico-container {
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.historico-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.historico-titulo {
+  margin: 0 0 8px;
+}
+
+.historico-descricao {
+  margin: 0;
+  color: #666;
+}
+
+.btn-abrir-dashboard,
+.btn-limpar-filtros {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-abrir-dashboard {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-abrir-dashboard:hover {
+  background-color: #2980b9;
+}
+
+.btn-limpar-filtros {
+  background-color: #e9ecef;
+  color: #333;
+  margin-left: auto; 
+  white-space: nowrap; 
+}
+
+.historico-filtros {
+  display: flex;
+  flex-wrap: wrap; 
+  align-items: center; 
+  gap: 15px; 
+  margin-bottom: 25px;
+}
+
+.historico-filtros input,
+.historico-filtros select {
+  flex: 1; 
+  min-width: 150px; 
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+}
+
+.historico-tabela-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+}
+
+.historico-contagem {
+  padding: 14px 16px;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+}
+
+.historico-tabela-scroll {
+  overflow-x: auto;
+}
+
+.historico-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historico-tabela th,
+.historico-tabela td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.historico-tabela th {
+  background: #f5f6f7;
+}
+
+.historico-vazio {
+  padding: 30px;
+  margin: 0;
+  text-align: center;
+  color: #666;
+}
+
+@media (max-width: 1000px) {
+}
+
+@media (max-width: 650px) {
+  .historico-cabecalho {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .historico-filtros {
+    flex-direction: column;
+    align-items: stretch; 
+  }
+
+  .historico-filtros input,
+  .historico-filtros select {
+    width: 100%;
+  }
+
+  .btn-limpar-filtros {
+    margin-left: 0;
+    width: 100%; 
+  }
+}
