@@ -1,16 +1,18 @@
-export async function Autenticar(email, senha) {
-    const resposta = await fetch("",{
+export async function Autenticar(login, senha) {
+    const resposta = await fetch("http://localhost:3000/login",{
         method:"POST",
         headers:{"Content-Type": "application/json"
         },
         body: JSON.stringify({
-            email: email,
+            login: login,
             senha: senha
         })
     });
 
 const data = await resposta.json()
-if (!response.ok) throw new Error(data.message ?? 'Falha no login')
+if (!resposta.ok){
+
+ throw new Error(data.message ?? 'Falha no login')}
  
     return data
 }

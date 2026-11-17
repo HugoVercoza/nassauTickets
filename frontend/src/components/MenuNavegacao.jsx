@@ -1,10 +1,10 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/MenuNavegacao.css';
 import Botao from './botao';
 
-
-export default function MenuNavegacao({sessao,encerrarSessao}) {
+export default function MenuNavegacao({ sessao, encerrarSessao }) {
   const [menuAberto, setMenuAberto] = useState(false);
 
   const toggleMenu = () => {
@@ -19,43 +19,71 @@ export default function MenuNavegacao({sessao,encerrarSessao}) {
         <div className={`tracinho ${menuAberto ? 'animar' : ''}`}></div>
       </button>
 
-      <div 
-        className={`menu-overlay ${menuAberto ? 'visivel' : ''}`} 
+      <div
+        className={`menu-overlay ${menuAberto ? 'visivel' : ''}`}
         onClick={toggleMenu}
       ></div>
 
       <nav className={`menu-lateral ${menuAberto ? 'aberto' : ''}`}>
         <div className="menu-cabecalho">
           <h2>Navegação</h2>
-          <button className="menu-btn-fechar" onClick={toggleMenu}>X</button>
+          <button className="menu-btn-fechar" onClick={toggleMenu}>
+            X
+          </button>
         </div>
 
         <ul className="menu-lista">
           <li>
             <Link to="/" onClick={toggleMenu}>🏠 Início</Link>
           </li>
+
           <li>
-            <Link to="/emissao" onClick={toggleMenu}>🎫 Emissão de Senhas</Link>
+            <Link to="/emissao" onClick={toggleMenu}>
+              🎫 Emissão de Senhas
+            </Link>
           </li>
-          <li>
-            <Link to="/login" onClick={toggleMenu}>🔑 Login</Link>
-          </li>
-          <li>
-            <Link to="/painel" onClick={toggleMenu} >📺 Painel (TV)</Link>
-          </li>
-          {!sessao &&(
-            <>
+
+          {!sessao && (
             <li>
-            <Link to="/guiche" onClick={toggleMenu}>👩‍💻 Guichê de Atendimento</Link>
-          </li>
+              <Link to="/login" onClick={toggleMenu}>🔑 Login</Link>
+            </li>
+          )}
+
           <li>
-            <Link to="/historico" onClick={toggleMenu}>📊 Histórico / Dashboard</Link>
+            <Link to="/painel" onClick={toggleMenu}>
+              📺 Painel (TV)
+            </Link>
           </li>
-          <li>
-            <Link to="/adm" onCick={toggleMenu}>👩‍💼 Gestor</Link>
-          </li>
-          <li><Botao onClick={encerrarSessao}texto="sair"></Botao>
-          </li></>)}
+
+          {sessao?.tipo === "ATENDENTE" && (
+            <li>
+              <Link to="/guiche" onClick={toggleMenu}>
+                👩‍💻 Guichê de Atendimento
+              </Link>
+            </li>
+          )}
+
+          {sessao?.tipo === "GESTOR" && (
+            <>
+              <li>
+                <Link to="/historico" onClick={toggleMenu}>
+                  📊 Histórico / Dashboard
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/adm" onClick={toggleMenu}>
+                  👩‍💼 Gestor
+                </Link>
+              </li>
+            </>
+          )}
+
+          {sessao && (
+            <li>
+              <Botao onClick={encerrarSessao} texto="Sair" />
+            </li>
+          )}
         </ul>
       </nav>
     </>
