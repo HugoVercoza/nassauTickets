@@ -1,181 +1,155 @@
-import { useEffect, useState } from "react";
-import "../styles/guiche.css";
-import dadosIniciais from "../data/dados.json";
-import Botao from "../components/botao";
+
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Botao from "../components/botao";
 
-const STORAGE_KEY = "senhas";
+import {
+  listarSenhas,
+  solicitarProxima,
+  solicitarNovamente,
+  atualizarEstado
+} from "../services/api";
 
-function carregarSenhas() {
-  try {
-    const salvas = localStorage.getItem(STORAGE_KEY);
-
-    if (salvas) {
-      const dados = JSON.parse(salvas);
-
-      if (Array.isArray(dados)) {
-        return dados;
-      }
-    }
-  } catch (erro) {
-    console.error("Erro ao carregar senhas:", erro);
-  }
-
-  return Array.isArray(dadosIniciais) ? dadosIniciais : [];
-}
+import "../styles/guiche.css";
 
 export default function Guiche() {
-  const [senhas, setSenhas] = useState(() => carregarSenhas());
-  
-  const [senhaAtual, setSenhaAtual] = useState(() => {
-    const dados = carregarSenhas();
-    const senhaEmAndamento = dados.find(
-      (s) => 
-        (s.estado === "CHAMADA" || 
-         s.estado === "CHAMADA_NOVAMENTE" || 
-         s.estado === "EM_ATENDIMENTO")
-    );
-    return senhaEmAndamento || null;
-  });
+  const [senhas, setSenhas] = useState([]);
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
+  const [origem, setOrigem] = useState("api");
+
+  const guiche = "Guichê 01";
+
+  const recarregar = useCallback(async () => {
+    try {
+      const resultado = await listarSenhas();
+
+      setSenhas(resultado.senhas || []);
+      setOrigem(resultado.origem || "api");
+
+      return resultado;
+    } catch (error) {
+      setOrigem("local");
+      setErro(error.message || "Erro ao carregar as senhas.");
+      throw error;
+    }
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(senhas));
-  }, [senhas]);
+    let ativo = true;
 
-  function salvarSenhas(novasSenhas) {
-    setSenhas(novasSenhas);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(novasSenhas));
-  }
-
-  function chamarProxima() {
-    const fila = senhas
-      .filter((senha) => senha.estado === "AGUARDANDO")
-      .sort((a, b) => {
-        const dataA = new Date(a.dataCriacao || 0);
-        const dataB = new Date(b.dataCriacao || 0);
-        return dataA - dataB;
-      });
-
-    if (fila.length === 0) {
-      alert("Não há senhas aguardando atendimento.");
-      return;
+    async function atualizar() {
+      try {
+        await recarregar();
+        if (ativo) setErro("");
+      } catch {
+        // O erro já foi registrado por recarregar.
+      }
     }
 
-    const proxima = fila[0];
+    atualizar();
 
-    const atualizada = senhas.map((senha) =>
-      senha.id === proxima.id
-        ? {
-            ...senha,
-            estado: "CHAMADA",
-            guiche: "Guichê 01",
-            dataChamada: new Date().toISOString(),
-            tentativasChamada: 1,
-          }
-        : senha
-    );
+    const intervalo = setInterval(atualizar, 3000);
 
-    setSenhaAtual({
-      ...proxima,
-      estado: "CHAMADA",
-      guiche: "Guichê 01",
-      dataChamada: new Date().toISOString(),
-      tentativasChamada: 1,
-    });
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+    };
+  }, [recarregar]);
 
-    salvarSenhas(atualizada);
-  }
-
-  function chamarNovamente() {
-    if (!senhaAtual) return;
-
-    const atualizada = senhas.map((senha) =>
-      senha.id === senhaAtual.id
-        ? {
-            ...senha,
-            estado: "CHAMADA_NOVAMENTE",
-            dataChamada: new Date().toISOString(),
-            tentativasChamada: 2,
-          }
-        : senha
-    );
-
-    setSenhaAtual((atual) => ({
-      ...atual,
-      estado: "CHAMADA_NOVAMENTE",
-      dataChamada: new Date().toISOString(),
-      tentativasChamada: 2,
-    }));
-
-    salvarSenhas(atualizada);
-  }
-
-  function iniciarAtendimento() {
-    if (!senhaAtual) return;
-
-    const atualizada = senhas.map((senha) =>
-      senha.id === senhaAtual.id
-        ? {
-            ...senha,
-            estado: "EM_ATENDIMENTO",
-          }
-        : senha
-    );
-
-    setSenhaAtual((atual) => ({
-      ...atual,
-      estado: "EM_ATENDIMENTO",
-    }));
-
-    salvarSenhas(atualizada);
-  }
-
-  function finalizarAtendimento() {
-    if (!senhaAtual) return;
-
-    const agora = new Date().toISOString();
-
-    const atualizada = senhas.map((senha) =>
-      senha.id === senhaAtual.id
-        ? {
-            ...senha,
-            estado: "ATENDIDA",
-            dataFinalizacao: agora,
-          }
-        : senha
-    );
-
-    setSenhaAtual(null);
-    salvarSenhas(atualizada);
-  }
-
-  function marcarNaoCompareceu() {
-    if (!senhaAtual) return;
-
-    const agora = new Date().toISOString();
-
-    const atualizada = senhas.map((senha) =>
-      senha.id === senhaAtual.id
-        ? {
-            ...senha,
-            estado: "NAO_COMPARECEU",
-            dataFinalizacao: agora,
-            tentativasChamada: 2,
-          }
-        : senha
-    );
-
-    setSenhaAtual(null);
-    salvarSenhas(atualizada);
-  }
+  const senhaAtual = senhas.find(
+    (senha) =>
+      senha.guiche === guiche &&
+      [
+        "CHAMADA",
+        "CHAMADA_NOVAMENTE",
+        "EM_ATENDIMENTO"
+      ].includes(senha.estado)
+  );
 
   const filaEspera = senhas.filter(
     (senha) => senha.estado === "AGUARDANDO"
   );
 
+  async function executar(operacao) {
+    if (carregando || origem === "local") return;
+
+    setCarregando(true);
+    setErro("");
+
+    try {
+      await operacao();
+      await recarregar();
+    } catch (error) {
+      setErro(
+        error.message || "Falha na comunicação com o servidor."
+      );
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  function chamarProxima() {
+    executar(() => solicitarProxima(guiche));
+  }
+
+  function chamarNovamente() {
+    if (!senhaAtual) return;
+
+    executar(() => solicitarNovamente(senhaAtual.id));
+  }
+
+  function iniciarAtendimento() {
+    if (!senhaAtual) return;
+
+    executar(() =>
+      atualizarEstado(senhaAtual.id, "EM_ATENDIMENTO")
+    );
+  }
+
+  function finalizarAtendimento() {
+    if (!senhaAtual) return;
+
+    executar(() =>
+      atualizarEstado(senhaAtual.id, "ATENDIDA")
+    );
+  }
+
+  function marcarNaoCompareceu() {
+    if (!senhaAtual) return;
+
+    executar(() =>
+      atualizarEstado(senhaAtual.id, "NAO_COMPARECEU")
+    );
+  }
+
   return (
     <div className="guiche-container">
       <h1>Terminal do Atendente</h1>
+
+      {origem === "local" && (
+        <p role="alert" style={{ color: "#b91c1c" }}>
+          Servidor indisponível. As operações de atendimento
+          estão temporariamente bloqueadas.
+        </p>
+      )}
+
+      {erro && (
+        <div role="alert" style={{ color: "#b91c1c" }}>
+          <p>{erro}</p>
+          <button
+            disabled={carregando}
+            onClick={() => {
+              recarregar().then(
+                () => setErro(""),
+                () => {}
+              );
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
 
       <section className="senha-atual">
         <h2>Senha atual</h2>
@@ -195,47 +169,73 @@ export default function Guiche() {
             </p>
 
             <p>
-              <strong>Guichê:</strong> {senhaAtual.guiche || "Guichê 01"}
+              <strong>Guichê:</strong>{" "}
+              {senhaAtual.guiche || guiche}
             </p>
 
             <div className="botoes-atendimento">
-              {(senhaAtual.estado === "CHAMADA" ||
-                senhaAtual.estado === "CHAMADA_NOVAMENTE") && (
-                <button onClick={iniciarAtendimento}>
+              {[
+                "CHAMADA",
+                "CHAMADA_NOVAMENTE"
+              ].includes(senhaAtual.estado) && (
+                <button
+                  disabled={carregando || origem === "local"}
+                  onClick={iniciarAtendimento}
+                >
                   Iniciar atendimento
                 </button>
               )}
 
-              {senhaAtual.estado === "CHAMADA" && (
-                <button onClick={chamarNovamente}>
+              {[
+                "CHAMADA",
+                "CHAMADA_NOVAMENTE"
+              ].includes(senhaAtual.estado) && (
+                <button
+                  disabled={carregando || origem === "local"}
+                  onClick={chamarNovamente}
+                >
                   Chamar novamente
                 </button>
               )}
 
               {senhaAtual.estado === "CHAMADA_NOVAMENTE" && (
-                <button onClick={marcarNaoCompareceu}>
+                <button
+                  disabled={carregando || origem === "local"}
+                  onClick={marcarNaoCompareceu}
+                >
                   Marcar não compareceu
                 </button>
               )}
 
               {senhaAtual.estado === "EM_ATENDIMENTO" && (
-                <button onClick={finalizarAtendimento}>
+                <button
+                  disabled={carregando || origem === "local"}
+                  onClick={finalizarAtendimento}
+                >
                   Finalizar atendimento
                 </button>
               )}
-              <Link to="/painel">
-                    <Botao texto="Painel"></Botao>
-                </Link>
 
-              
+              <Link to="/painel">
+                <Botao texto="Painel" />
+              </Link>
             </div>
           </>
         ) : (
           <>
             <p>Nenhuma senha em atendimento.</p>
 
-            <button onClick={chamarProxima}>
-              Chamar próxima senha
+            <button
+              disabled={
+                carregando ||
+                origem === "local" ||
+                filaEspera.length === 0
+              }
+              onClick={chamarProxima}
+            >
+              {carregando
+                ? "Aguarde..."
+                : "Chamar próxima senha"}
             </button>
           </>
         )}
