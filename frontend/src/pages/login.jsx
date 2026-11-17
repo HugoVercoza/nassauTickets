@@ -6,8 +6,8 @@ import { Autenticar } from "../services/authService";
 import {useNavigate} from "react-router-dom"
 
 
-export default function Login({setSessao}) {
-    const[email, setEmail] = useState('');
+export default function Login({onLogin}) {
+    const[login, setLogin] = useState('');
     const[senha, setSenha] = useState('');
     const[error, setError]= useState('');
     const[mostrarSenha, setMostrarSenha]= useState(false)
@@ -20,26 +20,33 @@ export default function Login({setSessao}) {
         e.preventDefault();
         setError('');
 
-        if (!senha || !email){
+        if (!senha || !login){
             setError("Preencha todos os campos")
             return;
         }
         setLoading(true)
 
         try{
-            const data = await Autenticar(email, senha);
-            console.log(data);
-            navegar('/painel', { replace: true })
-        }   
-        catch(erro){
-            setError(erro.message);
-        }
-        finally{
-            setLoading(false);
-        }
+            const data = await Autenticar(login, senha);
+            console.log("Usuário recebido:", data.usuario);
+            console.log("Tipo de usuário:", data.usuario.tipo);
+            onLogin(data.usuario);
+            if (data.usuario.tipo === "GESTOR"){
+                navegar("/adm", { replace: true });
+            } else if (data.usuario.tipo === "ATENDENTE"){
+                navegar("/guiche", { replace: true });
+            } else{
+                setError("Tipo de usuário não reconhecido");
+            };
 
-    } ;
+            
+         
+    } catch (erro) {
+    setError(erro.message);
 
+} finally {
+    setLoading(false);
+}}
     
     function Visibilidade(){
         setMostrarSenha(!mostrarSenha);
@@ -49,9 +56,6 @@ export default function Login({setSessao}) {
 
 
     return( 
-
-
-        
             
         <div className="formulario1">   
             <h1>Login</h1>
@@ -59,9 +63,9 @@ export default function Login({setSessao}) {
 
             <form onSubmit={handleSubmit}>
                 <p></p>
-                <label className="label" htmlFor="email">Email</label> 
+                <label className="label" htmlFor="email">User</label> 
                 
-                <input className="email" type= "email" id="email" placeholder="Email" value={email} onChange={(evento) => setEmail(evento.target.value)} ></input>
+                <input className="email"  id="email" placeholder="User" value={login} onChange={(evento) => setLogin(evento.target.value)} ></input>
 
                 <label className="label" htmlFor="senha">Senha</label>
             
