@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/painel.css';
+import { listarSenhas } from '../services/atendimentoService';
 
 export default function Painel() {
   const [senhaAtual, setSenhaAtual] = useState(null);
   const [ultimasSenhas, setUltimasSenhas] = useState([]);
+  const [erroRede, setErroRede] = useState('');
   const [animando, setAnimando] = useState(false);
 
   const tocarBip = () => {
@@ -20,18 +22,17 @@ export default function Painel() {
       gain.connect(audioCtx.destination);
 
       osc.start();
+      osc.onended = () => { void audioCtx.close(); };
       osc.stop(audioCtx.currentTime + 0.35);
     } catch (e) {
       console.warn("Áudio não reproduzido devido a restrições do navegador:", e);
     }
   };
 
-  const lerSenhasDoLocalStorage = () => {
+  const lerSenhasDoLocalStorage = async () => {
     try {
-      const registros = localStorage.getItem('senhas');
-      if (!registros) return;
-
-      const todas = JSON.parse(registros);
+      const todas = await listarSenhas();
+      setErroRede('');
 
       const chamadas = todas
         .filter((s) => ['CHAMADA', 'CHAMADA_NOVAMENTE', 'EM_ATENDIMENTO', 'ATENDIDA'].includes(s.estado))
@@ -50,9 +51,9 @@ export default function Painel() {
         });
 
         setUltimasSenhas(chamadas.slice(1, 6));
-      }
+      } else { setSenhaAtual(null); setUltimasSenhas([]); }
     } catch (erro) {
-      console.error("Falha ao ler dados de atendimento:", erro);
+      setErroRede(erro.message);
     }
   };
 
@@ -76,6 +77,7 @@ export default function Painel() {
 
   return (
     <div className="painel-tv-wrapper">
+      {erroRede && <div role="alert">{erroRede} Exibindo última informação recebida. <button onClick={lerSenhasDoLocalStorage}>Tentar novamente</button></div>}
       <section className={`painel-principal ${animando ? 'painel-alerta-ativo' : ''}`}>
         <div className="painel-cabecalho">
           <h1>SISTEMA DE ATENDIMENTO</h1>
