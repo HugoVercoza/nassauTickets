@@ -81,3 +81,9 @@ button:hover {
   min-width: 70px;
   font-size: 18px;
 }
+.guiche-container select { padding: 10px; margin: 8px; }
+.rede-guiche { padding: 14px; margin: 16px 0; border-radius: 8px; background: #edf4ff; color: #163459; }
+.rede-guiche.erro { background: #fff0f0; color: #871d1d; }
+.rede-guiche.sucesso { background: #eaf8ef; color: #185e31; }
+.guiche-container button:disabled { opacity: .55; cursor: wait; }
+.rede-guiche button { margin-left: 12px; }

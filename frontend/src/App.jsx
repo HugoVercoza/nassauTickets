@@ -46,7 +46,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <MenuNavegacao sessao={sessao} logout={encerrarSessao}/>
+      <MenuNavegacao sessao={sessao} encerrarSessao={encerrarSessao}/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin= {iniciarSessao}/>} />

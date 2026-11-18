@@ -43,7 +43,7 @@ export default function MenuNavegacao({sessao,encerrarSessao}) {
           <li>
             <Link to="/painel" onClick={toggleMenu} >📺 Painel (TV)</Link>
           </li>
-          {!sessao &&(
+          {sessao &&(
             <>
             <li>
             <Link to="/guiche" onClick={toggleMenu}>👩‍💻 Guichê de Atendimento</Link>
@@ -52,7 +52,7 @@ export default function MenuNavegacao({sessao,encerrarSessao}) {
             <Link to="/historico" onClick={toggleMenu}>📊 Histórico / Dashboard</Link>
           </li>
           <li>
-            <Link to="/adm" onCick={toggleMenu}>👩‍💼 Gestor</Link>
+            <Link to="/adm" onClick={toggleMenu}>👩‍💼 Gestor</Link>
           </li>
           <li><Botao onClick={encerrarSessao}texto="sair"></Botao>
           </li></>)}

@@ -6,7 +6,7 @@ import { Autenticar } from "../services/authService";
 import {useNavigate} from "react-router-dom"
 
 
-export default function Login({setSessao}) {
+export default function Login({onLogin}) {
     const[email, setEmail] = useState('');
     const[senha, setSenha] = useState('');
     const[error, setError]= useState('');
@@ -28,8 +28,8 @@ export default function Login({setSessao}) {
 
         try{
             const data = await Autenticar(email, senha);
-            console.log(data);
-            navegar('/painel', { replace: true })
+            onLogin(data);
+            navegar('/guiche', { replace: true })
         }   
         catch(erro){
             setError(erro.message);

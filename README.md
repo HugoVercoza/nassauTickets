@@ -10,7 +10,7 @@ Consolidar os conhecimentos de desenvolvimento Web, organização de projetos, G
 | Nome | Matrícula | Papel |
 | :--- | :--- | :--- |
 | Hugo Tenorio Verçoza | 01805685 | Scrum Master / Desenvolvedor |
-| Bruna Beatriz Maria Souza Simões | 01850090 | Desenvolvedora / Documentadora |
+| Bruna Beatriz Maria Souza Simões | 01850090 | Desenvolvedor |
 | Kalinne Vitória Sá de Barros | 01849503 | Testadora |
 | Kauã Willams Domingos Marinho | 01849379 | Desenvolvedor |
 | Rosana Vitória Lima de Araújo | 01853967 | Testadora / Documentadora |
@@ -33,6 +33,7 @@ O sistema opera com três agentes principais:
 * **AC (Agente Cliente):** Emite a senha no totem e aguarda a chamada no painel.
 
 O fluxo de atendimento segue a prioridade: SP (Senha Prioritária) -> SE (Retirada de Exames) -> SG (Senha Geral).
+
 
 ## Instruções de Instalação e Configuração
 Para configurar o ambiente de desenvolvimento local, certifique-se de ter o Node.js e o MySQL instalados.
@@ -58,3 +59,15 @@ O projeto utiliza um fluxo de versionamento baseado em duas branches principais:
 * **`dev`:** Branch principal de desenvolvimento, onde as novas funcionalidades e correções são integradas antes de irem para a `main`.
 
 Todo o desenvolvimento é realizado na branch `dev` (ou em branches auxiliares que fazem merge para a `dev`) e, posteriormente, integrado à `main` através de Pull Requests / Merge.
+
+## Execução da versão integrada
+
+Backend: executar `npm ci` e `npm start` na pasta `backend`.
+Frontend: executar `npm ci` e `npm run dev` na pasta `frontend`.
+
+A API de atendimento utiliza persistência local em JSON.
+A integração dessas rotas com MySQL permanece pendente.
+
+Acesso de demonstração:
+- Email: atendente@nassau.test
+- Senha: NassauAV2!

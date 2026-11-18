@@ -1,8 +1,8 @@
 import Botao from '../components/botao';
 import '../styles/emissao.css';
 import {useState} from 'react';
-import gerarSenha from '../services/senhas';
-import { CarregarSenha } from '../services/senhas';
+import { emitirSenha, listarSenhas } from '../services/atendimentoService';
+
 
 
 
@@ -25,7 +25,10 @@ export default function Emissao(){
 
     
     const [Senha ,setSenha] = useState('');
-    function EmitirSenha(){
+    const [enviando, setEnviando] = useState(false);
+    const [erro, setErro] = useState('');
+    async function EmitirSenha(){
+        if (enviando) return;
         let tipo = '';
         if (atendimento ==='Atendimento Geral'){
             tipo= 'SG';
@@ -43,16 +46,20 @@ export default function Emissao(){
             alert('Selecione o tipo de atendimento antes de emitir a senha');
             return;
         }
-        const senha = gerarSenha(tipo);
+        setEnviando(true); setErro('');
+        try {
+        const senha = await emitirSenha(tipo);
         console.log(senha.numero)
 
         
         setSenha(senha.numero);
+        void listarSenhas().catch(() => {});
+        } catch (e) { setErro(e.message); } finally { setEnviando(false); }
       
     }
 
     function Reiniciar(){
-        setAtendimento(''),
+        setAtendimento('');
         setSenha('');
 
 
@@ -73,7 +80,9 @@ export default function Emissao(){
         </div>
         <div>
             <h2>Emitir Senha</h2>
-            <Botao className="botao" texto="Emitir Senha" onClick={EmitirSenha} ></Botao>
+            {enviando && <p role="status">Emitindo senha...</p>}
+            {erro && <p role="alert">{erro} Clique em Emitir Senha para tentar novamente.</p>}
+            <Botao className="botao" texto="Emitir Senha" disabled={enviando} onClick={EmitirSenha} ></Botao>
             <h2 className="senha">{Senha && `Senha Emitida: ${Senha}`}</h2>
             <Botao className="botao" texto= "Reiniciar" onClick= {Reiniciar} ></Botao>
         </div>

@@ -1,5 +1,10 @@
 export default function  Adm(){
     return(
-        <div></div>
+        <div>
+            
+
+
+
+        </div>
     )
 };
