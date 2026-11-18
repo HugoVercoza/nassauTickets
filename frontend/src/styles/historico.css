@@ -30,6 +30,12 @@
   font-weight: bold;
 }
 
+.historico-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .btn-abrir-dashboard {
   background-color: #3498db;
   color: white;
