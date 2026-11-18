@@ -86,6 +86,7 @@ function selecionarProximaSenha() {
 
 app.get("/", (_req, res) => res.json({ mensagem: "Backend NassauTickets funcionando!" }));
 
+// Login unificado: aceita /login e /api/login, com { login } ou { email }
 app.post(["/login", "/api/login"], async (req, res) => {
   const identificador = String(req.body?.login || req.body?.email || "").trim();
   const senha = String(req.body?.senha || "");
@@ -191,6 +192,7 @@ app.post(["/login", "/api/login"], async (req, res) => {
   });
 });
 
+// Retorna array direto (compatível com atendimentoService.js e api.js)
 app.get("/api/senhas", (_req, res) => res.json(senhas));
 
 app.get("/api/chamadas", (req, res) => {
@@ -234,7 +236,10 @@ app.post("/api/senhas", (req, res) => {
   const prefixoDia = `${dia}-${tipo}`;
   const sequencia = senhas.filter((s) => String(s.id).startsWith(prefixoDia)).length + 1;
   if (sequencia > 999) {
-    return res.status(409).json({ erro: "Limite diário atingido", mensagem: "Limite diário deste tipo de senha atingido." });
+    return res.status(409).json({
+      erro: "Limite diário atingido",
+      mensagem: "Limite diário deste tipo de senha atingido.",
+    });
   }
 
   const numero = `${tipo}${String(sequencia).padStart(3, "0")}`;
@@ -306,14 +311,17 @@ app.post("/api/guiche/:id/novamente", (req, res) => {
   return res.json({ ...senha, senha });
 });
 
-// Atualizar estado via /api/senhas/:id
+// Atualizar estado via /api/senhas/:id (usado pelo atendimentoService.js da main)
 app.patch("/api/senhas/:id", (req, res) => {
   const senha = senhas.find((s) => s.id === req.params.id);
   if (!senha) return res.status(404).json({ erro: "Senha não encontrada.", mensagem: "Senha não encontrada." });
 
   const { acao, guiche } = req.body || {};
   if (guiche && senha.guiche && senha.guiche !== guiche) {
-    return res.status(409).json({ erro: "Esta senha pertence a outro guichê.", mensagem: "Esta senha pertence a outro guichê." });
+    return res.status(409).json({
+      erro: "Esta senha pertence a outro guichê.",
+      mensagem: "Esta senha pertence a outro guichê.",
+    });
   }
 
   const mapaAcao = {
@@ -356,7 +364,7 @@ app.patch("/api/senhas/:id", (req, res) => {
   return res.json({ ...senha, senha });
 });
 
-// Atualizar estado via /api/guiche/:id/estado 
+// Atualizar estado via /api/guiche/:id/estado (compatibilidade com api.js)
 app.patch("/api/guiche/:id/estado", (req, res) => {
   const senha = senhas.find((s) => s.id === req.params.id);
   if (!senha) return res.status(404).json({ erro: "Senha não encontrada", mensagem: "Senha não encontrada." });

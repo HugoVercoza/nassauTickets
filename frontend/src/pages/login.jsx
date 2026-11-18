@@ -61,7 +61,7 @@ export default function Login({onLogin}) {
                 <p></p>
                 <label className="label" htmlFor="email">Email</label> 
                 
-                <input className="email" type= "email" id="email" placeholder="Email" value={email} onChange={(evento) => setEmail(evento.target.value)} ></input>
+                <input className="email" type= "text" id="email" placeholder="Email" value={email} onChange={(evento) => setEmail(evento.target.value)} ></input>
 
                 <label className="label" htmlFor="senha">Senha</label>
             
