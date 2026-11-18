@@ -51,11 +51,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin= {iniciarSessao}/>} />
         <Route path="/emissao" element={<Emissao />} />
-        <Route path="/guiche" element={<ProtectedRoute sessao={sessao} tipoPermitido="ATENDENTE"><Guiche/></ProtectedRoute>
+        <Route path="/guiche" element={<ProtectedRoute sessao={sessao}><Guiche/></ProtectedRoute>
           } />
-        <Route path="/historico" element={<ProtectedRoute sessao={sessao} tipoPermitido="GESTOR"><Historico /></ProtectedRoute>} />
+        <Route path="/historico" element={<ProtectedRoute sessao={sessao} ><Historico /></ProtectedRoute>} />
         <Route path="/painel" element={<Painel />}/>
-        <Route path="/adm" element={<ProtectedRoute sessao={sessao} tipoPermitido="GESTOR"> <Adm/> </ProtectedRoute>}/>
+        <Route path="/adm" element={<Adm/>}/>
         
         
         </Routes>

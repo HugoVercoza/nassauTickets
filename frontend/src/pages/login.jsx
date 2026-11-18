@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom"
 
 
 export default function Login({onLogin}) {
-    const[login, setLogin] = useState('');
+    const[email, setEmail] = useState('');
     const[senha, setSenha] = useState('');
     const[error, setError]= useState('');
     const[mostrarSenha, setMostrarSenha]= useState(false)
@@ -20,33 +20,26 @@ export default function Login({onLogin}) {
         e.preventDefault();
         setError('');
 
-        if (!senha || !login){
+        if (!senha || !email){
             setError("Preencha todos os campos")
             return;
         }
         setLoading(true)
 
         try{
-            const data = await Autenticar(login, senha);
-            console.log("Usuário recebido:", data.usuario);
-            console.log("Tipo de usuário:", data.usuario.tipo);
-            onLogin(data.usuario);
-            if (data.usuario.tipo === "GESTOR"){
-                navegar("/adm", { replace: true });
-            } else if (data.usuario.tipo === "ATENDENTE"){
-                navegar("/guiche", { replace: true });
-            } else{
-                setError("Tipo de usuário não reconhecido");
-            };
+            const data = await Autenticar(email, senha);
+            onLogin(data);
+            navegar('/guiche', { replace: true })
+        }   
+        catch(erro){
+            setError(erro.message);
+        }
+        finally{
+            setLoading(false);
+        }
 
-            
-         
-    } catch (erro) {
-    setError(erro.message);
+    } ;
 
-} finally {
-    setLoading(false);
-}}
     
     function Visibilidade(){
         setMostrarSenha(!mostrarSenha);
@@ -56,6 +49,9 @@ export default function Login({onLogin}) {
 
 
     return( 
+
+
+        
             
         <div className="formulario1">   
             <h1>Login</h1>
@@ -63,9 +59,9 @@ export default function Login({onLogin}) {
 
             <form onSubmit={handleSubmit}>
                 <p></p>
-                <label className="label" htmlFor="email">User</label> 
+                <label className="label" htmlFor="email">Email</label> 
                 
-                <input className="email"  id="email" placeholder="User" value={login} onChange={(evento) => setLogin(evento.target.value)} ></input>
+                <input className="email" type= "email" id="email" placeholder="Email" value={email} onChange={(evento) => setEmail(evento.target.value)} ></input>
 
                 <label className="label" htmlFor="senha">Senha</label>
             

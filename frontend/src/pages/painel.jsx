@@ -1,13 +1,75 @@
+<<<<<<< HEAD
+import React, { useState, useEffect } from 'react';
+import '../styles/painel.css';
+import { listarSenhas } from '../services/atendimentoService';
+=======
 import { useCallback, useEffect, useRef, useState } from "react";
 import { acompanharChamadas, listarEventosChamada, listarSenhas, lerSenhasLocais } from "../services/api";
 import { anunciarChamada, habilitarAudio, pararAudio } from "../services/audioChamadas";
 import "../styles/painel.css";
+>>>>>>> origin/dev
 
 const CHAMADAS = new Set(["CHAMADA","CHAMADA_NOVAMENTE","EM_ATENDIMENTO","ATENDIDA","NAO_COMPARECEU"]);
 function ultimas(senhas) {
   return senhas.filter(s=>CHAMADAS.has(s.estado) && s.dataChamada).sort((a,b)=>new Date(b.dataChamada)-new Date(a.dataChamada)).slice(0,5);
 }
 export default function Painel() {
+<<<<<<< HEAD
+  const [senhaAtual, setSenhaAtual] = useState(null);
+  const [ultimasSenhas, setUltimasSenhas] = useState([]);
+  const [erroRede, setErroRede] = useState('');
+  const [animando, setAnimando] = useState(false);
+
+  const tocarBip = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // Tom E5
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.onended = () => { void audioCtx.close(); };
+      osc.stop(audioCtx.currentTime + 0.35);
+    } catch (e) {
+      console.warn("Áudio não reproduzido devido a restrições do navegador:", e);
+    }
+  };
+
+  const lerSenhasDoLocalStorage = async () => {
+    try {
+      const todas = await listarSenhas();
+      setErroRede('');
+
+      const chamadas = todas
+        .filter((s) => ['CHAMADA', 'CHAMADA_NOVAMENTE', 'EM_ATENDIMENTO', 'ATENDIDA'].includes(s.estado))
+        .sort((a, b) => new Date(b.dataChamada || 0) - new Date(a.dataChamada || 0));
+
+      if (chamadas.length > 0) {
+        const maisRecente = chamadas[0];
+
+        setSenhaAtual((anterior) => {
+          if (!anterior || anterior.numero !== maisRecente.numero || anterior.estado !== maisRecente.estado) {
+            tocarBip();
+            setAnimando(true);
+            setTimeout(() => setAnimando(false), 2200);
+          }
+          return maisRecente;
+        });
+
+        setUltimasSenhas(chamadas.slice(1, 6));
+      } else { setSenhaAtual(null); setUltimasSenhas([]); }
+    } catch (erro) {
+      setErroRede(erro.message);
+    }
+  };
+
+=======
   const [chamadas,setChamadas] = useState(()=>ultimas(lerSenhasLocais()));
   const [origem,setOrigem] = useState("local");
   const [animando,setAnimando] = useState(false);
@@ -25,6 +87,7 @@ export default function Painel() {
     // O backend determina QUANDO anunciar; a TV reproduz nos seus próprios alto-falantes.
     cancelarAudio.current = anunciarChamada(evento.senha, evento.tipo === "CHAMADA_NOVAMENTE", setErroSom);
   },[]);
+>>>>>>> origin/dev
   useEffect(() => {
     let ativo = true;
     let pararStream = () => {};
@@ -76,6 +139,67 @@ export default function Painel() {
       document.removeEventListener("pointerdown", desbloquear);
       document.removeEventListener("keydown", desbloquear);
     };
+<<<<<<< HEAD
+  }, []);
+
+  return (
+    <div className="painel-tv-wrapper">
+      {erroRede && <div role="alert">{erroRede} Exibindo última informação recebida. <button onClick={lerSenhasDoLocalStorage}>Tentar novamente</button></div>}
+      <section className={`painel-principal ${animando ? 'painel-alerta-ativo' : ''}`}>
+        <div className="painel-cabecalho">
+          <h1>SISTEMA DE ATENDIMENTO</h1>
+          <span className="painel-subtitulo">Aguarde ser chamado pelo painel</span>
+        </div>
+
+        {senhaAtual ? (
+          <div className="destaque-card">
+            <span className="tipo-atendimento-pill">
+              {senhaAtual.tipo || senhaAtual.tipoSigla || 'GERAL'}
+            </span>
+            
+            <div className="senha-grande">{senhaAtual.numero}</div>
+
+            <div className="box-guiche">
+              <span className="rotulo-guiche">GUICHÊ</span>
+              <span className="valor-guiche">{senhaAtual.guiche || '01'}</span>
+            </div>
+
+            {senhaAtual.estado === 'CHAMADA_NOVAMENTE' && (
+              <div className="aviso-segunda-chamada">2ª CHAMADA</div>
+            )}
+          </div>
+        ) : (
+          <div className="painel-sem-chamadas">
+            <p>Nenhuma senha chamada até ao momento</p>
+            <small>As chamadas efetuadas nos guichés serão exibidas aqui.</small>
+          </div>
+        )}
+      </section>
+
+      <aside className="painel-historico-coluna">
+        <h2>ÚLTIMAS CHAMADAS</h2>
+        <ul className="lista-ultimas">
+          {ultimasSenhas.length > 0 ? (
+            ultimasSenhas.map((item, idx) => (
+              <li key={item.numero || idx} className="item-historico-tv">
+                <div className="dados-senha-historico">
+                  <span className="codigo-historico">{item.numero}</span>
+                  <span className="tipo-historico">{item.tipo || item.tipoSigla || 'Geral'}</span>
+                </div>
+                <div className="guiche-historico">
+                  Guichê <strong>{item.guiche || '01'}</strong>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className="sem-historico">Sem registros anteriores</li>
+          )}
+        </ul>
+      </aside>
+    </div>
+  );
+}
+=======
   }, [receberEvento]);
   useEffect(()=>{if(!animando)return;const t=setTimeout(()=>setAnimando(false),2400);return()=>clearTimeout(t)},[animando,chamadas]);
   const atual=chamadas[0]; const anteriores=chamadas.slice(1);
@@ -95,3 +219,4 @@ export default function Painel() {
     </ul><small className="painel-contador">Exibindo {chamadas.length} de até 5 últimas senhas chamadas</small></aside>
   </main>;
 }
+>>>>>>> origin/dev

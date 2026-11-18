@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+require('dotenv').config();
+const { criarApp } = require('./app');
+const PORT = process.env.PORT || 3000;
+criarApp().listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+=======
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
@@ -96,3 +102,4 @@ app.patch("/api/guiche/:id/estado",(req,res)=>{
 });
 const PORT = Number(process.env.PORT || 3000);
 app.listen(PORT,()=>console.log(`Servidor rodando na porta ${PORT}`));
+>>>>>>> origin/dev
